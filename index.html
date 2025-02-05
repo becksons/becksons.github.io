@@ -1,164 +1,20 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8" />
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3.85.2/dist/phaser-arcade-physics.min.js"></script>
+  <meta charset="UTF-8" />
+  <title>My Modular Phaser Game</title>
+  <!-- Phaser from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.85.2/dist/phaser.js"></script>
 </head>
-<body>
+<div class = "game" id="game">
+ 
+  <link rel="stylesheet" type="text/css" href="./style.css">
+ 
+  
+  <script type="module" src="./index.js"></script>
 
-<script>
-class Example extends Phaser.Scene
-{
-        preload () {
-                // Load your grass image
-                this.load.image('startbutton','assets/startbutton.png');
+</div>
 
-                
-                this.load.image('walk0', 'assets/walk0.png');
-                this.load.image('walk1', 'assets/walk1.png');
-                this.load.image('walk2', 'assets/walk2.png');
-                this.load.image('walk3', 'assets/walk3.png');
-                this.load.image('default', 'assets/default.png');
-
-                this.load.image('block0', 'assets/block-0.png');
-                this.load.image('block1', 'assets/block-1.png');
-                this.load.image('block2', 'assets/block-2.png');
-                this.load.image('block3', 'assets/block-3.png');
-                this.load.image('block4', 'assets/block-4.png');
-                this.load.image('block5', 'assets/block-5.png');
-                this.load.image('block6', 'assets/block-6.png');
-                this.load.image('block7', 'assets/block-7.png');
-            
-                this.load.image('grass', 'https://bsnbk.files.show/grassblock.png');
-                this.load.image('cloud', 'https://bsnbk.files.show/cloud.png');
-        }
-
-        create () {
-                this.ground = this.add.tileSprite(
-                        0,
-                        1772,
-                        8000,
-                        256,
-                        'grass'
-                ).setOrigin(0, 0);
-                this.physics.add.existing(this.ground, true);
-                this.physics.world.setBounds(-.01, 0, 8000, 2000);
-                this.cameras.main.setBounds(0, 0, 8000, 2000);
-
-                this.anims.create({
-                        key: 'break',
-                        frames: [
-                            { key: 'block0' },
-                            { key: 'block1' },
-                            { key: 'block2' },
-                            { key: 'block3' },
-                            { key: 'block4' },
-                            { key: 'block5' },
-                            { key: 'block6' },
-                            { key: 'block7' }
-                        ],
-                        frameRate: 10
-                });
-
-                this.anims.create({
-                        key: 'walk',
-                        frames: [
-                            { key: 'walk0' },
-                            { key: 'walk1' },
-                            { key: 'walk2' },
-                            { key: 'walk3' }
-                        ],
-                        frameRate: 8,
-                        repeat: -1
-                });
-
-                this.player = this.physics.add.sprite(50, 1500, 'walk0');
-                this.player.setCollideWorldBounds(true);
-                this.cursors = this.input.keyboard.createCursorKeys();
-                this.cameras.main.startFollow(this.player, true, 0.05, 0.05);
-
-                this.clouds = this.add.group();
-                for (let i = 0; i < 10; i++) {
-                        const x = Phaser.Math.Between(400, 7800);
-                        const y = Phaser.Math.Between(100, 800);
-                        let cloudSprite = this.physics.add.sprite(x, y, 'cloud');
-                        const randomScale = Phaser.Math.FloatBetween(0.8, 2.2);
-                        cloudSprite.setScale(randomScale);
-                        cloudSprite.body.allowGravity = false;
-                        cloudSprite.baseY = y;
-                        cloudSprite.offset = Math.random() * 1000;
-                        this.clouds.add(cloudSprite);
-                }
-
-                this.block = this.physics.add.sprite(1400, 1300, 'block0');
-                this.block.setImmovable(true);
-                this.block.body.allowGravity = false;
-                this.block.setScale(1.5);
-                this.physics.add.collider(this.player, this.block, this.hitBlock, null, this);
-
-                this.block.on('animationcomplete', (anim, frame) => {
-                        if (anim.key === 'break') {
-                                this.block.destroy();
-                        }
-                });
-        }
-
-        update () {
-                const speed = 200;
-                const jumpSpeed = 400;
-                this.player.setVelocityX(0);
-
-                if (this.cursors.left.isDown) {
-                        this.player.setVelocityX(-speed);
-                        this.player.setFlipX(true);
-                        this.player.anims.play('walk', true);
-                } else if (this.cursors.right.isDown) {
-                        this.player.setVelocityX(speed);
-                        this.player.setFlipX(false);
-                        this.player.anims.play('walk', true);
-                        this.ground.tilePositionX += 5;
-                } else {
-                        this.player.anims.stop();
-                        this.player.setTexture('default');
-                }
-
-                if (this.cursors.up.isDown && this.player.body.blocked.down) {
-                        this.player.setVelocityY(-jumpSpeed);
-                        this.player.anims.play('walk', false);
-                }
-
-                this.clouds.children.each(cloud => {
-                        const amplitude = 10;
-                        const frequency = 0.005;
-                        cloud.y = cloud.baseY + amplitude * Math.sin((cloud.offset + this.player.x) * frequency);
-                });
-        }
-
-        hitBlock(player, block) {
-                if (player.body.velocity.y < 0 && player.y > block.y) {
-                        block.anims.play('break');
-                } else if (player.body.velocity.x !== 0) {
-                        block.anims.play('break');
-                }
-        }
-}
-
-const config = {
-        type: Phaser.AUTO,
-        width: 2500,
-        height: 2000,
-        scene: Example,
-        backgroundColor: '#87CEEB',
-        physics: {
-                default: 'arcade',
-                arcade: {
-                        gravity: { y: 200 }
-                }
-        }
-};
-
-new Phaser.Game(config);
-</script>
-
-</body>
+ 
+</div>
 </html>
