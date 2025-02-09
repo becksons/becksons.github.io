@@ -44,6 +44,7 @@ export default class PreloadScene extends Phaser.Scene {
       this.load.image('grass', 'https://bsnbk.files.show/grassblock.png');
       this.load.image('cloud', 'https://bsnbk.files.show/smilecloud.png');
       this.load.image('cloud1','assets/smilecloud1.png');
+      this.load.image('evil-cloud','assets/evilcloud.png');
 
       
     }

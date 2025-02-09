@@ -69,13 +69,13 @@ export default class GameScene extends Phaser.Scene {
         this.resumeDialogue = false;
   
         // ----------------------------------------------------------------
-        // CUTSCENE STARTS HERE
+        //FIRST CUTSCENE STARTS HERE
         // ----------------------------------------------------------------
         
          this.canMove = false;
   
          if (!this.hasSpawnedBlock) {
-          this.createBreakableBlock(1400, 1900);
+          this.createBreakableBlock(1400, 1600);
           this.hasSpawnedBlock = true;
         }
   
@@ -104,7 +104,7 @@ export default class GameScene extends Phaser.Scene {
   
 
   // ======================================
-  //         CREATE INTRO DIALOGUE
+  //          INTRO DIALOGUE
   // ======================================
   createIntroDialogue() {
     const { width, height } = this.sys.game.canvas;
@@ -114,7 +114,7 @@ export default class GameScene extends Phaser.Scene {
     this.dialogSprite.setAlpha(0); 
     this.dialogSprite.setScale(1.0);
 
-    this.time.delayedCall(2000, () => {
+    this.time.delayedCall(1000, () => {
       this.dialogSprite.setAlpha(1);
     }, [], this);
 
@@ -171,6 +171,23 @@ export default class GameScene extends Phaser.Scene {
      
       this.resumeStartX = this.player.x; 
       
+
+      return;
+    }
+
+    // If we just advanced to bubble #6, trigger the cutscene
+    if (this.currentIndex === 6) {
+      console.log('Showing bubble #6, triggering cutscene...');
+      this.dialogSprite.setTexture(this.dialogKeys[6]);
+      this.isDialogueActive = false;
+      this.canMove = false;
+      this.dialogSprite.setAlpha(0);
+      this.dialogSprite.setPosition(this.player.x + this.dialogueSpritePosX, this.player.y + this.dialogueSpritePosY);
+
+      this.time.delayedCall(1000, () => {
+        this.dialogSprite.setAlpha(1);
+        this.triggerRainCutscene();
+      }, [], this);
 
       return;
     }
@@ -309,7 +326,7 @@ export default class GameScene extends Phaser.Scene {
      
       const x = segmentWidth * (i + 1) + Phaser.Math.Between(-200, 200);
     
-      const y = Phaser.Math.Between(1000, 2300);
+      const y = Phaser.Math.Between(100, 1300);
    
       const scale = possibleScales[Phaser.Math.Between(0, possibleScales.length - 1)];
    
@@ -329,13 +346,13 @@ export default class GameScene extends Phaser.Scene {
     }
   } 
   createCloudWave() {
-    // Random wave sizes
+    // Do random wave sizes
     const waveSize = Phaser.Math.Between(3, 6);
    
     const baseX = Phaser.Math.Between(500, 7500);
-    const baseY = Phaser.Math.Between(1000, 1500);
+    const baseY = Phaser.Math.Between(100, 1000);
    waveSize=4
-    const fixedScales = [ 1.0, 1.3,1.8];
+    const fixedScales = [ 1.0, 1.2,1.3,1.5];
     let scales = [...fixedScales]; 
     if (waveSize === 4) {
    
@@ -375,9 +392,9 @@ export default class GameScene extends Phaser.Scene {
   }
   
   updateCloudMovement() {
-     const amplitude = 20;
+     const amplitude = 20;//max vertical displacement 
    
-     const frequency = 0.002;
+     const frequency = 0.002;//speed of wave
   
     this.clouds.children.each(cloud => {
        cloud.y = cloud.baseY + amplitude * Math.sin((cloud.offset + this.time.now) * frequency);
@@ -420,7 +437,7 @@ export default class GameScene extends Phaser.Scene {
           duration: 1000,    
           ease: 'Power2',
           onComplete: () => {
-            console.log('Resume sprite done tweening.')
+            console.log('Resume sprite done tweening ')
           }});
         this.canMove = false;
   
@@ -447,10 +464,54 @@ export default class GameScene extends Phaser.Scene {
   
     
     this.time.delayedCall(3000, () => {
-      console.log('2s after hitting block, the block break was triggered.');
+      console.log('block break triggered...');
     }, [], this);
   
     this.blockHit = true;
   }
+//============================================ 
+//                    RAIN CUT SCENE
+//============================================ 
+  triggerRainCutscene() {
+     this.cameras.main.fade(1000, 44, 62, 80);  
+    this.cameras.main.once('camerafadeoutcomplete', () => {
+      this.cameras.main.setBackgroundColor('#406fbb');
+      this.cameras.main.fadeIn(1000);
+
+      const evilCloud = this.add.image(0, 0, 'evil-cloud');
+      evilCloud.setOrigin(0, 0);  
+      evilCloud.setScale(1.5);
+      evilCloud.originalX = evilCloud.x;
+      evilCloud.originalY = evilCloud.y;
+      this.time.delayedCall(1000, () => {
+       this.resumeSprite.setAlpha(0);
+      }, [], this);
+     
+      this.tweens.add({
+        targets: evilCloud,
+        x: this.resumeSprite.x - 100,  
+        y: this.resumeSprite.y - 100, 
+        alpha: 1,
+        duration: 1500, 
+        ease: 'Sine.easeInOut',
+        onComplete: () => {  // this.takeResume(evilCloud, this.resumeSprite);
+          this.tweens.add({
+            targets: evilCloud,
+            x: evilCloud.originalX,
+            y: evilCloud.originalY,
+            duration: 3000,
+            ease: 'Sine.easeInOut',
+            onComplete: () => {
+    //         console.log('Evil cloud done tweening ');
+            }
+          });
+   
+        }
+      });
+    });
+
+     
+  }
+
   
 }
