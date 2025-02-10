@@ -34,9 +34,12 @@ export default class GameScene extends Phaser.Scene {
     this.createPlayer();
     this.createClouds();
 
-   
     this.createIntroDialogue();
     this.isDialogueActive = true;
+
+   
+
+     
   }
 
   update() {
@@ -55,7 +58,7 @@ export default class GameScene extends Phaser.Scene {
   
     // -------------------------
     // Trigger cutscene after traveling X distance
-    //    (when the user was last on bubble #3)
+    //    
     // -------------------------
     if (this.resumeDialogue) {
       const distanceTraveled = this.player.x - this.resumeStartX;
@@ -85,11 +88,9 @@ export default class GameScene extends Phaser.Scene {
         this.dialogSprite.setPosition(this.player.x + 700, this.player.y - 400);
         this.dialogSprite.setAlpha(1);
         this.isDialogueActive = true;
-  
-        //A short pause, then let the player move again 
-        //    (so they can go break the block).
+   
         this.time.delayedCall(2000, () => {
-          this.canMove = true; // unfreeze after 2 seconds
+          this.canMove = true; 
         }, [], this);
   
         console.log('Triggered cutscene: block spawned, bubble #4 shown, player movement re-enabled in 2s');
@@ -140,42 +141,31 @@ export default class GameScene extends Phaser.Scene {
   // ======================================
   nextBubble() {
     this.currentIndex++;
- 
+  
     if (this.currentIndex > this.dialogKeys.length) {
-      //end of dialogue
-      
+      // end of dialogue
       this.dialogSprite.destroy();
       this.isDialogueActive = false;
       this.canMove = true;
-      
-
-      
       return;
     }
-
-    // If we just advanced to bubble #3, show it and let the player walk
-    if (this.currentIndex === 4 ) {
+  
+ 
+    if (this.currentIndex === 4) {
       this.dialogSprite.setTexture(this.dialogKeys[3]);
       console.log('Showing bubble #3, letting player walk...');
-     
-       this.isDialogueActive = false;
+      this.isDialogueActive = false;
       this.canMove = true;
       this.dialogSprite.setAlpha(0);
       this.dialogSprite.setPosition(this.player.x + this.dialogueSpritePosX, this.player.y + this.dialogueSpritePosY);
-      
       this.time.delayedCall(3000, () => {
         this.dialogSprite.setAlpha(1);
         this.resumeDialogue = true;
-      }, this);
-      
-     
-      this.resumeStartX = this.player.x; 
-      
-
+      }, [], this);
+      this.resumeStartX = this.player.x;
       return;
     }
-
-    // If we just advanced to bubble #6, trigger the cutscene
+  
     if (this.currentIndex === 6) {
       console.log('Showing bubble #6, triggering cutscene...');
       this.dialogSprite.setTexture(this.dialogKeys[6]);
@@ -183,21 +173,30 @@ export default class GameScene extends Phaser.Scene {
       this.canMove = false;
       this.dialogSprite.setAlpha(0);
       this.dialogSprite.setPosition(this.player.x + this.dialogueSpritePosX, this.player.y + this.dialogueSpritePosY);
-
       this.time.delayedCall(1000, () => {
         this.dialogSprite.setAlpha(1);
         this.triggerRainCutscene();
       }, [], this);
-
       return;
     }
+    
+   
+    if (this.currentIndex === 8) {
+     
+      this.dialogSprite.setPosition(this.player.x + this.dialogueSpritePosX, this.player.y + this.dialogueSpritePosY);
+    
+      this.time.delayedCall(1000, () => {
 
-     if (this.currentIndex > 5 && this.currentIndex<this.dialogKeys.length) {
-      
-      this.isDialogueActive = true;
-      
+        this.createResumeOptions();
+        console.log("Displaying yes/no options...");
+
+      }, [], this);
+ 
+      this.isDialogueActive = false;
+      return;
     }
-
+  
+    
     this.dialogSprite.setTexture(this.dialogKeys[this.currentIndex]);
     this.dialogSprite.setPosition(this.player.x + this.dialogueSpritePosX, this.player.y + this.dialogueSpritePosY);
   }
@@ -233,7 +232,7 @@ export default class GameScene extends Phaser.Scene {
   //         ANIMATIONS
   // ===================================
   createAnimations() {
-    // Break block
+    // Break block animation
     this.anims.create({
       key: 'break',
       frames: [
@@ -249,8 +248,8 @@ export default class GameScene extends Phaser.Scene {
       frameRate: 10,
       repeat: 0
     });
-
-    // Walk
+  
+    // Walk animation
     this.anims.create({
       key: 'walk',
       frames: [
@@ -262,7 +261,85 @@ export default class GameScene extends Phaser.Scene {
       frameRate: 8,
       repeat: -1
     });
+  
+    // Evil cloud blowing animation
+    let cloudFrames = [];
+    for (let i = 1; i <= 30; i++) {
+      cloudFrames.push({ key: 'cloudblow-' + i });
+    }
+    this.anims.create({
+      key: 'cloudBlow',
+      frames: cloudFrames,
+      frameRate: 15,
+      repeat: 3
+    });
+
+    // Resume pieces animation
+    this.anims.create({
+      key: 'blowEducation',
+      frames: [{ key: 'education-piece' }],
+      frameRate: 1,
+      repeat: 0
+    });
+
+    this.anims.create({
+      key: 'blowWork',
+      frames: [{ key: 'work-piece' }],
+      frameRate: 1,
+      repeat: 0
+    });
+
+    this.anims.create({
+      key: 'blowSkills',
+      frames: [{ key: 'skills-piece' }],
+      frameRate: 1,
+      repeat: 0
+    });
+
+    this.anims.create({
+      key: 'blowInterests',
+      frames: [{ key: 'interests-piece' }],
+      frameRate: 1,
+      repeat: 0
+    });
   }
+  triggerCloudBlow() {
+    this.dialogSprite.setTexture(this.dialogKeys[7]);
+
+    if (this.evilCloud) {
+      this.evilCloud.play('cloudBlow');
+      this.evilCloud.on('animationcomplete', () => {
+        console.log('Cloud blow animation complete');
+        this.evilCloud.setTexture('evil-cloud');
+        
+        // Blow out resume pieces
+        const pieces = [
+          { key: 'education-piece', distance: 300 },
+          { key: 'work-piece', distance: 600 },
+          { key: 'skills-piece', distance: 900 },
+          { key: 'interests-piece', distance: 1200 }
+        ];
+
+        pieces.forEach((piece, index) => {
+          let sprite = this.add.sprite(this.evilCloud.x, this.evilCloud.y, piece.key);
+          sprite.setAlpha(0);
+          sprite.setScale(0.5);
+          this.tweens.add({
+            targets: sprite,
+            x: this.evilCloud.x + piece.distance,
+            y: this.evilCloud.y + Phaser.Math.Between(-100, 100),
+            alpha: 1,
+            duration: 5000 + index * 500,
+            ease: 'Power2',
+            onComplete: () => {
+              console.log(`${piece.key} blown out`);
+            }
+          });
+        });
+      });
+    }
+  }
+  
 
   // ===================================
   //         PLAYER
@@ -478,31 +555,31 @@ export default class GameScene extends Phaser.Scene {
       this.cameras.main.setBackgroundColor('#406fbb');
       this.cameras.main.fadeIn(1000);
 
-      const evilCloud = this.add.image(0, 0, 'evil-cloud');
-      evilCloud.setOrigin(0, 0);  
-      evilCloud.setScale(1.5);
-      evilCloud.originalX = evilCloud.x;
-      evilCloud.originalY = evilCloud.y;
+      this.evilCloud = this.add.sprite(0, 0, 'evil-cloud');
+      this.evilCloud.setOrigin(0, 0);  
+      this.evilCloud.setScale(1.5);
+      this.evilCloud.originalX = this.evilCloud.x;
+      this.evilCloud.originalY = this.evilCloud.y;
       this.time.delayedCall(1000, () => {
        this.resumeSprite.setAlpha(0);
       }, [], this);
      
       this.tweens.add({
-        targets: evilCloud,
+        targets: this.evilCloud,
         x: this.resumeSprite.x - 100,  
         y: this.resumeSprite.y - 100, 
         alpha: 1,
         duration: 1500, 
         ease: 'Sine.easeInOut',
-        onComplete: () => {  // this.takeResume(evilCloud, this.resumeSprite);
+        onComplete: () => {  
           this.tweens.add({
-            targets: evilCloud,
-            x: evilCloud.originalX,
-            y: evilCloud.originalY,
+            targets: this.evilCloud,
+            x: this.evilCloud.originalX,
+            y: this.evilCloud.originalY,
             duration: 3000,
             ease: 'Sine.easeInOut',
             onComplete: () => {
-    //         console.log('Evil cloud done tweening ');
+             this.triggerCloudBlow();
             }
           });
    
@@ -512,6 +589,108 @@ export default class GameScene extends Phaser.Scene {
 
      
   }
-
+  triggerCloudBlow() {
+ 
+    this.dialogSprite.setTexture(this.dialogKeys[7]);
+  
+    // Start playing evil cloud’s blowing animation
+   
+    if (this.evilCloud) {
+      this.evilCloud.play('cloudBlow');
+      
+    }
+  
+    const pieces = [
+      { key: 'education-piece', distance: 3000, anim: 'blowEducation' },
+      { key: 'work-piece', distance: 5000, anim: 'blowWork' },
+      { key: 'skills-piece', distance: 7000, anim: 'blowSkills' },
+      { key: 'interests-piece', distance: 9000, anim: 'blowInterests' }
+    ];
+  
+    this.cameras.main.stopFollow();
+  
+    
+    let tweensCompleted = 0;
+    const totalPieces = pieces.length;
+  
+    const groundY = this.sys.game.canvas.height - 256;
+  
+    // Spawn concurrently
+    pieces.forEach((piece) => {
+    
+      let pieceSprite = this.add.sprite(this.evilCloud.x, this.evilCloud.y, piece.key);
+      pieceSprite.setScale(0.5);
+     
+      pieceSprite.play(piece.anim);
+   
+      let targetX = this.evilCloud.x + piece.distance;
+      let targetY = Phaser.Math.Between(groundY - 200, groundY - 50);
+   
+      this.tweens.add({
+        targets: pieceSprite,
+        x: targetX,
+        y: targetY,
+        alpha: 1,
+        duration: 5000,  
+        ease: 'Power2',
+        onComplete: () => {
+          console.log(`${piece.key} blown out`);
+          tweensCompleted++;
+          // Once all pieces have landed…
+          if (tweensCompleted === totalPieces) {
+            console.log('All pieces blown out, returning camera to player.');
+            
+            this.cameras.main.startFollow(this.player, true, 0.05, 0.05);
+  
+            // Stop the evil cloud's animation 
+            if (this.evilCloud) {
+              this.evilCloud.stop();
+              this.evilCloud.setTexture('evil-cloud');
+              this.time.delayedCall(1000, () => {
+                this.tweens.add({
+                  targets: this.evilCloud,
+                  x: -(this.evilCloud.width+100),  
+                  duration: 2000,
+                  ease: 'Power2',
+                  onComplete: () => {
+                    console.log('Evil cloud moved off screen');
+                  }
+                });
+              }, [], this);
+            }
+  
+            // Now ask if player wants to play full game
+            this.dialogSprite.setTexture(this.dialogKeys[8]);
+             this.time.delayedCall(1000, () => {
+              this.createResumeOptions();
+              console.log("Displaying yes/no options...");
+            }, [], this);
+          }
+        }
+      });
+    });
+  }
+  
+  //Call yes/no to play game
+  createResumeOptions() {
+     const centerX = this.cameras.main.centerX;
+    const centerY = this.cameras.main.centerY;
+  
+ 
+    this.yesButton = this.add.image(centerX-300, centerY-300 , 'yes-option-resume').setInteractive();
+    this.noButton  = this.add.image(centerX-300, centerY+300 , 'no-option-resume').setInteractive();
+  
+     this.yesButton.on('pointerdown', () => {
+      console.log('Yes option chosen');
+      // CODE FOR YES
+    });
+  
+    this.noButton.on('pointerdown', () => {
+      console.log('No option chosen');
+      // CODE FOR NO
+    });
+  }
+  
+  
   
 }
