@@ -24,7 +24,7 @@ export default class TitleScene extends Phaser.Scene {
           { key: 'start-scene-0' },
           { key: 'start-scene-1' }
         ],
-        frameRate: .8,
+        frameRate: 1,
         repeat: -1
       });
   

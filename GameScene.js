@@ -305,7 +305,7 @@ export default class GameScene extends Phaser.Scene {
   }
   triggerCloudBlow() {
     this.dialogSprite.setTexture(this.dialogKeys[7]);
-
+    
     if (this.evilCloud) {
       this.evilCloud.play('cloudBlow');
       this.evilCloud.on('animationcomplete', () => {
@@ -397,13 +397,13 @@ export default class GameScene extends Phaser.Scene {
    
     const segmentWidth = 8000 / (totalClouds + 1);
    
-    const possibleScales = [0.6, 0.9, .7, .8,1.2];
+    const possibleScales = [0.6, 0.9, .7, .8];
   
     for (let i = 0; i < totalClouds; i++) {
      
       const x = segmentWidth * (i + 1) + Phaser.Math.Between(-200, 200);
     
-      const y = Phaser.Math.Between(100, 1300);
+      const y = Phaser.Math.Between(700, 1300);
    
       const scale = possibleScales[Phaser.Math.Between(0, possibleScales.length - 1)];
    
@@ -555,6 +555,16 @@ export default class GameScene extends Phaser.Scene {
       this.cameras.main.setBackgroundColor('#406fbb');
       this.cameras.main.fadeIn(1000);
 
+      this.cameras.main.once('camerafadeincomplete', () => {
+        this.clouds.children.each(cloud => {
+          if (cloud.texture.key === 'cloud') {
+            cloud.setTexture('scaredcloud2');
+          } else if (cloud.texture.key === 'cloud1') {
+            cloud.setTexture('scaredcloud1');
+          }
+        });
+      });
+
       this.evilCloud = this.add.sprite(0, 0, 'evil-cloud');
       this.evilCloud.setOrigin(0, 0);  
       this.evilCloud.setScale(1.5);
@@ -593,8 +603,7 @@ export default class GameScene extends Phaser.Scene {
  
     this.dialogSprite.setTexture(this.dialogKeys[7]);
   
-    // Start playing evil cloud’s blowing animation
-   
+    
     if (this.evilCloud) {
       this.evilCloud.play('cloudBlow');
       
@@ -615,7 +624,7 @@ export default class GameScene extends Phaser.Scene {
   
     const groundY = this.sys.game.canvas.height - 256;
   
-    // Spawn concurrently
+ 
     pieces.forEach((piece) => {
     
       let pieceSprite = this.add.sprite(this.evilCloud.x, this.evilCloud.y, piece.key);
@@ -671,18 +680,22 @@ export default class GameScene extends Phaser.Scene {
     });
   }
   
-  //Call yes/no to play game
+ 
   createResumeOptions() {
      const centerX = this.cameras.main.centerX;
     const centerY = this.cameras.main.centerY;
   
  
-    this.yesButton = this.add.image(centerX-300, centerY-300 , 'yes-option-resume').setInteractive();
-    this.noButton  = this.add.image(centerX-300, centerY+300 , 'no-option-resume').setInteractive();
+    this.yesButton = this.add.image(centerX-400, centerY -200, 'yes-option-resume').setInteractive().setScale(.8);
+    this.noButton  = this.add.image(centerX-400, centerY+200, 'no-option-resume').setInteractive().setScale(.8);
   
      this.yesButton.on('pointerdown', () => {
       console.log('Yes option chosen');
+      const { width, height } = this.sys.game.canvas;
       // CODE FOR YES
+      this.gamerules = this.add.image((width / 2)+190, height / 2, 'game-rules')
+        .setDisplaySize(width, height);
+        
     });
   
     this.noButton.on('pointerdown', () => {

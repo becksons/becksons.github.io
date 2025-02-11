@@ -24,7 +24,7 @@ export default class PreloadScene extends Phaser.Scene {
     this.load.image('dialog9', 'assets/dialogue-9.png');
     this.load.image('resume', 'assets/resumefull.png');
 
-    // Walk animation frames and default player image
+    // Walk animation 
     this.load.image('walk0', 'assets/walk0.png');
     this.load.image('walk1', 'assets/walk1.png');
     this.load.image('walk2', 'assets/walk2.png');
@@ -41,11 +41,18 @@ export default class PreloadScene extends Phaser.Scene {
     this.load.image('block6', 'assets/block-6.png');
     this.load.image('block7', 'assets/block-7.png');
 
-    // Other assets
+    
     this.load.image('grass', 'https://bsnbk.files.show/grassblock.png');
-    this.load.image('cloud', 'https://bsnbk.files.show/smilecloud.png');
+    this.load.image('cloud', 'assets/smilecloud.png');
     this.load.image('cloud1', 'assets/smilecloud1.png');
+
+    this.load.image('scaredcloud1', 'assets/scaredcloud1.png');
+    this.load.image('scaredcloud2', 'assets/scaredcloud2.png');
+
+
+
     this.load.image('evil-cloud', 'assets/evilcloud.png');
+
 
     // Load cloud-blow images individually (keys "cloudblow-1" to "cloudblow-30")
     this.load.image('cloudblow-1', 'assets/cloudevil/cloudblow-1.png');
@@ -86,6 +93,8 @@ export default class PreloadScene extends Phaser.Scene {
 
     this.load.image('yes-option-resume', 'assets/yes-option-resume.png');
     this.load.image('no-option-resume', 'assets/no-option-resume.png');
+
+    this.load.image('game-rules', 'assets/gamerules.png');
 
   }
 
