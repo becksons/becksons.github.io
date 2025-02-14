@@ -8,8 +8,7 @@ import NewWorldScene from './NewWorldScene.js';
 const config = {
   type: Phaser.AUTO,
   width: 2500,  
-  height: window.innerHeight-1500,
-  physics: {
+  height: window.innerHeight > 1500 ? window.innerHeight - 1500 : 800,  physics: {
     default: 'arcade',
     arcade: {
       gravity: { y: 200 }
