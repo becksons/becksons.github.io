@@ -15,7 +15,8 @@
     "homepage": "https://becksons/becksons.github.io",
     "scripts": {
       "dev": "vite",
-      "build": "vite build --base=/becksons.github.io/",
+      "build": "webpack", 
+      "deploy": "sh ./deploy.sh",
       "preview": "vite preview"
     },
     "devDependencies": {
@@ -25,4 +26,3 @@
       "phaser": "^3.87.0"
     }
   }
-  
