@@ -1,5 +1,5 @@
 // GameScene.js
-import Player from './Player.js'; // Adjust the path if necessary
+import Player from 'https://github.com/becksons/my-portfolio-game/blob/2c7f42f198fc404121e8d2943a04dc9d68c68583/Player.js'; // Adjust the path if necessary
 
 export default class GameScene extends Phaser.Scene {
   constructor() {
