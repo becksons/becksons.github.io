@@ -95,7 +95,8 @@ export default class PreloadScene extends Phaser.Scene {
     this.load.image('no-option-resume', 'assets/no-option-resume.png');
 
     this.load.image('game-rules', 'assets/gamerules.png');
-
+    this.load.image('stone-ground', 'assets/stoneblock.png');
+    this.load.image('pipe', 'assets/pipe.png');
   }
 
   create() {
