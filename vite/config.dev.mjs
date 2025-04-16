@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-    base: './',
+    base: '/becksons.github.io/',
     build: {
         rollupOptions: {
             output: {
