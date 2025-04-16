@@ -25,7 +25,7 @@ export default class ResumeScene extends Phaser.Scene {
     this.physics.world.setBounds(0, 0, 8000, height);
     this.cameras.main.setBounds(0, 0, 8000, height);
 
-    this.player = new Player(this, 100, height - 150, 'default');
+    this.player = new Player(this, 100, height - 100, 'default');
     this.player.setCollideWorldBounds(true);
     this.physics.add.collider(this.player, this.ground);
     this.cameras.main.startFollow(this.player, true, 0.05, 0.05);

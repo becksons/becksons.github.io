@@ -531,7 +531,7 @@ export default class GameScene extends Phaser.Scene {
 
   createPipe(pipeX) {
     const { height } = this.sys.game.canvas;
-    this.pipe = this.physics.add.sprite(pipeX, height - 256 - 64, 'pipe');
+    this.pipe = this.physics.add.sprite(pipeX, height - 50 , 'pipe');
     this.pipe.setImmovable(true);
     this.pipe.body.allowGravity = false;
     this.physics.add.overlap(this.player, this.pipe, this.handlePipe, null, this);
@@ -543,7 +543,7 @@ export default class GameScene extends Phaser.Scene {
       player.body.enable = false;
       this.tweens.add({
         targets: player,
-        y: pipe.y + pipe.height / 2,
+        y: pipe.y + pipe.height / 2 ,
         duration: 1000,
         ease: 'Linear',
         onComplete: () => {
