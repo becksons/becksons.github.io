@@ -37,7 +37,7 @@ export default class TitleScene extends Phaser.Scene {
  
       const startButton = this.add.image(width / 2, height / 1.15, 'startbutton')
         .setInteractive()
-        .setScale(3.5);
+        
   
         startButton.on('pointerdown', () => {
             console.log('Starting IntroDialogueScene...');

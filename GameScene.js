@@ -1,4 +1,6 @@
 export default class GameScene extends Phaser.Scene {
+
+  
   constructor() {
     super({ key: 'GameScene' });
 
@@ -63,7 +65,7 @@ export default class GameScene extends Phaser.Scene {
     if (this.resumeDialogue) {
       const distanceTraveled = this.player.x - this.resumeStartX;
   
-      if (distanceTraveled >= 100) {
+      if (distanceTraveled >= 50) {
  
         
   
@@ -136,9 +138,10 @@ export default class GameScene extends Phaser.Scene {
     });
   }
 
-  // ======================================
-  //        NEXT / PREV BUBBLE
-  // ======================================
+
+// ======================================
+//         NEXT / PREV BUBBLE
+// ======================================
   nextBubble() {
     this.currentIndex++;
   
@@ -436,9 +439,7 @@ export default class GameScene extends Phaser.Scene {
       scales.push(Phaser.Math.FloatBetween(1.2,1.8));
     }
   
-   
     scales.sort((a, b) => a - b);
-  
     
     const xSpacing = 250;
    
@@ -447,15 +448,13 @@ export default class GameScene extends Phaser.Scene {
       const offsetX = i * xSpacing;
       const offsetY = Phaser.Math.Between(-30, 30);
   
-   
       const cloudKey = Phaser.Math.Between(0, 1) === 0 ? 'cloud' : 'cloud1';
-  
       let cloudSprite = this.physics.add.sprite(
         baseX + offsetX,
         baseY + offsetY,
         cloudKey
       );
-  
+
        cloudSprite.setScale(scales[i]);
   
        cloudSprite.body.allowGravity = false;
@@ -470,9 +469,8 @@ export default class GameScene extends Phaser.Scene {
   
   updateCloudMovement() {
      const amplitude = 20;//max vertical displacement 
-   
      const frequency = 0.002;//speed of wave
-  
+    
     this.clouds.children.each(cloud => {
        cloud.y = cloud.baseY + amplitude * Math.sin((cloud.offset + this.time.now) * frequency);
     });
@@ -682,7 +680,8 @@ export default class GameScene extends Phaser.Scene {
   
  
   createResumeOptions() {
-     const centerX = this.cameras.main.centerX;
+
+    const centerX = this.cameras.main.centerX;
     const centerY = this.cameras.main.centerY;
   
  
@@ -691,17 +690,34 @@ export default class GameScene extends Phaser.Scene {
   
      this.yesButton.on('pointerdown', () => {
       console.log('Yes option chosen');
-      const { width, height } = this.sys.game.canvas;
       // CODE FOR YES
-      this.gamerules = this.add.image((width / 2)+190, height / 2, 'game-rules')
-        .setDisplaySize(width, height);
+      this.startActualGame();
         
     });
   
     this.noButton.on('pointerdown', () => {
       console.log('No option chosen');
       // CODE FOR NO
+      //Write function to display resume ( PDF file?)
     });
+  }
+  //----------------------------------------------------------------
+  // END OF RAIN CUT SCENE, START ACTUAL GAME...
+  //TODO: 1. Fix dialogue control
+  //      2. Add start button 
+  //    3.  Start graphics for education piece (pipe? block? coins?)
+      
+  //----------------------------------------------------------------
+  startActualGame(){
+    const { width, height } = this.sys.game.canvas;
+     
+      //Maybe make separate function/file for game rule start
+      this.gamerules = this.add.image((width / 2)+200, height / 2, 'game-rules')
+        .setDisplaySize(width, height);
+        //Add start button...
+        ///go from there
+
+
   }
   
   

@@ -26,6 +26,6 @@ const game = new Phaser.Game(config);
 
  
 window.addEventListener('resize', () => {
-  game.scale.resize(2500, window.innerHeight-1500); // Keep the width fixed
+  game.scale.resize(25000, window.innerHeight-1500); // Keep the width fixed
   game.scale.refresh();
 });
